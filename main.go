@@ -94,7 +94,7 @@ func spellDomain(m map[byte] *node, bytes *[]byte)  {
 				domain = fmt.Sprintf(format, domain)
 			}
 			domaims = append(domaims, domain)
-			return
+			continue
 		} else {
 			folw := v.folw
 			spellDomain(folw, bytes)
@@ -105,6 +105,9 @@ func spellDomain(m map[byte] *node, bytes *[]byte)  {
 }
 
 func main()  {
+
+	//sourceFile = "list.txt"
+	//dstFile = "1.txt"
 
 	if sourceFile == "" || dstFile == "" {
 		flag.PrintDefaults()
