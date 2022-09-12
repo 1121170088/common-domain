@@ -81,27 +81,38 @@ func hasDomain(domain string) (has bool) {
 	return
 }
 
-func spellDomain(m map[byte] *node, bytes *[]byte)  {
-	for k, v := range m {
-		*bytes = append(*bytes, k)
-		if v.end {
-			bytes2 := make([]byte, len(*bytes))
-			copy(bytes2, *bytes)
-			*bytes = (*bytes)[:len(*bytes) - 1]
-			reverse(bytes2)
-			domain := strings.Trim(string(bytes2), "\x00")
-			if format != "" {
-				domain = fmt.Sprintf(format, domain)
-			}
-			domaims = append(domaims, domain)
-			continue
-		} else {
-			folw := v.folw
-			spellDomain(folw, bytes)
-			*bytes = (*bytes)[:len(*bytes) - 1]
+func spellDomain(m map[byte] *node, bytes *[]byte, end bool)  {
+	if len(m) == 0 {
+		bytes2 := make([]byte, len(*bytes))
+		copy(bytes2, *bytes)
+		reverse(bytes2)
+		domain := strings.Trim(string(bytes2), "\x00")
+		if format != "" {
+			domain = fmt.Sprintf(format, domain)
 		}
+		domaims = append(domaims, domain)
+	} else {
+		for k, v := range m {
+			if end && (k == '.') {
+				bytes2 := make([]byte, len(*bytes))
+				copy(bytes2, *bytes)
+				reverse(bytes2)
+				domain := strings.Trim(string(bytes2), "\x00")
+				if format != "" {
+					domain = fmt.Sprintf(format, domain)
+				}
+				domaims = append(domaims, domain)
+				continue
+			}
 
+			folw := v.folw
+			*bytes = append(*bytes, k)
+			spellDomain(folw, bytes, v.end)
+			*bytes = (*bytes)[:len(*bytes) - 1]
+
+		}
 	}
+
 }
 
 func main()  {
@@ -137,7 +148,7 @@ func main()  {
 		bytes := make([]byte, 1)
 		bytes = append(bytes, k)
 		folw := v.folw
-		spellDomain(folw, &bytes)
+		spellDomain(folw, &bytes, false)
 	}
 
 
